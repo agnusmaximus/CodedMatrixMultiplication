@@ -26,8 +26,8 @@ generate_coded2_data:
 	cd data && python generate_data.py $(N_PROCS) 2 $(N_ROWS) $(N_COLS) $(N_ROWS)x$(N_COLS) 1 && cd ..
 
 naive:
-	mpic++ -DIMPLEMENTATION=0 $(LIBS) $(INCLUDES) $(DEFS) main.cpp -o naive_multiply
+	mpic++ -DIMPLEMENTATION=0 $(DEFS) main.cpp $(INCLUDES) $(LIBS) -o naive_multiply
 coded1:
-	mpic++ -DIMPLEMENTATION=1 $(LIBS) $(INCLUDES) $(DEFS) main.cpp -o coded1_multiply
+	mpic++ -DIMPLEMENTATION=1 $(DEFS) main.cpp $(INCLUDES) $(LIBS) -o coded1_multiply
 coded2:
-	mpic++ -DIMPLEMENTATION=2 $(LIBS) $(INCLUDES) $(DEFS) main.cpp -o coded2_multiply
+	mpic++ -DIMPLEMENTATION=2 $(DEFS) main.cpp $(INCLUDES) $(LIBS) -o coded2_multiply

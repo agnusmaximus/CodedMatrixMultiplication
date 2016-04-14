@@ -1,6 +1,7 @@
 #ifndef UTIL
 #define UTIL
 
+#include <string>
 #include <time.h>
 #include <iostream>
 #include <cblas.h>
@@ -10,8 +11,14 @@
 #include <cstdlib>
 #include <cmath>
 #include <vector>
+#include <string.h>
+#include <stdio.h>
 
 using namespace std;
+
+string to_string(int val) {
+  return static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << val)).str();
+}
 
 long long int get_time() {
   struct timeval tp;
@@ -25,7 +32,7 @@ void matrix_vector_multiply(double *mat, double *vec, double *out, int m_cols, i
 
 double *load_vector(int vector_length, string fname) {
     double *vec = (double *)malloc(sizeof(double) * vector_length);
-    ifstream in(fname);
+    ifstream in(fname.c_str());
     if (!in) {
 	cout << "Error: " << fname << " could not be opened!" << endl;
 	exit(0);
@@ -39,7 +46,7 @@ double *load_vector(int vector_length, string fname) {
 
 double *load_matrix(int n_rows, int n_cols, string fname) {
     double *matrix = (double *)malloc(sizeof(double) * n_rows * n_cols);
-    ifstream in(fname);
+    ifstream in(fname.c_str());
     if (!in) {
 	cout << "Error: " << fname << " could not be opened!" << endl;
 	exit(0);
@@ -54,7 +61,7 @@ double *load_matrix(int n_rows, int n_cols, string fname) {
 }
 
 void check_correct(double *out, int n, string result_vector_fname) {
-    ifstream in(result_vector_fname);
+    ifstream in(result_vector_fname.c_str());
     if (!in) {
 	cout << "Error: " << result_vector_fname << " could not be opened!" << endl;
 	exit(0);
