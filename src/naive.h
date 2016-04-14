@@ -26,7 +26,7 @@ void naive_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_fi
     }
     else {
 	vec = (double *)malloc(sizeof(double) * n_cols);
-	matrix = load_matrix(n_rows_per_worker, n_cols, input_matrix_filename + to_string(proc_id) + ".dat");
+	matrix = load_matrix(n_rows_per_worker, n_cols, input_matrix_filename + to_string_util(proc_id) + ".dat");
 	out = (double *)malloc(sizeof(double) * n_rows_per_worker);
 	memset(out, 0, sizeof(double) * n_rows_per_worker);
     }

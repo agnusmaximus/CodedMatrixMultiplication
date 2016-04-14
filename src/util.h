@@ -16,7 +16,7 @@
 
 using namespace std;
 
-string to_string(int val) {
+string to_string_util(int val) {
   return static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << val)).str();
 }
 
