@@ -76,4 +76,53 @@ void check_correct(double *out, int n, string result_vector_fname) {
     }
 }
 
+void get_incomplete_worker(int *completed, int n_workers, int *out) {
+    for (int i = 0; i < n_workers; i++) {
+	if (!completed[i]) {
+	    *out = i;
+	    return;
+	}
+    }
+}
+
+void get_both_incomplete_workers(int *completed, int n_workers, int *smaller, int *larger) {
+    int i;
+    for (i = 0; i < n_workers; i++) {
+	if (!completed[i]) {
+	    *smaller = i++;
+	    break;
+	}
+    }
+    for (; i < n_workers; i++) {
+	if (!completed[i]) {
+	    *larger = i;
+	    return;
+	}
+    }
+}
+
+void vector_vector_sum(double *v1, double *v2, double *out, int n_rows) {
+    for (int i = 0; i < n_rows; i++) {
+	out[i] = v1[i] + v2[i];
+    }
+}
+
+void vector_vector_subtract(double *v1, double *v2, double *out, int n_rows) {
+    for (int i = 0; i < n_rows; i++) {
+	out[i] = v1[i] - v2[i];
+    }
+}
+
+void vector_vector_scalar_multiply(double *v1, double *out, double k, int n_rows) {
+    for (int i = 0; i < n_rows; i++) {
+	out[i] = v1[i] * k;
+    }
+}
+
+void vector_vector_add_scalark(double *v1, double *v2, double *out, double k, int n_rows) {
+    for (int i = 0; i < n_rows; i++) {
+	out[i] = v1[i] + v2[i]*k;
+    }
+}
+
 #endif

@@ -4,6 +4,8 @@
 #include <mpi.h>
 #include "src/util.h"
 #include "src/naive.h"
+#include "src/coded1.h"
+#include "src/coded2.h"
 
 #define NAIVE 0
 #define CODED_1 1
@@ -35,6 +37,12 @@ int main(void) {
 
     if (IMPLEMENTATION == NAIVE) {
 	naive_matrix_vector_multiply(N_ROWS, N_COLS, INPUT_VECTOR, INPUT_MATRIX, RESULT_VECTOR);
+    }
+    else if (IMPLEMENTATION == CODED_1) {
+	coded1_matrix_vector_multiply(N_ROWS, N_COLS, INPUT_VECTOR, INPUT_MATRIX, RESULT_VECTOR);
+    }
+    else if (IMPLEMENTATION == CODED_2) {
+	coded2_matrix_vector_multiply(N_ROWS, N_COLS, INPUT_VECTOR, INPUT_MATRIX, RESULT_VECTOR);
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
