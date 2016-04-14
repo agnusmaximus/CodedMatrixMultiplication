@@ -92,8 +92,6 @@ void coded2_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 	if (n_done == n_workers-1) {
 	    int worker_incomplete = -1;
 	    get_incomplete_worker(completed, n_workers, &worker_incomplete);
-	    //If the second to last process completed, and all but 1 process completed,
-	    //then compute the result of the last process
 	    if (completed[n_workers-2]) {
 		if (worker_incomplete != n_workers - 1) {
 		    double * out_i = &out[n_rows_per_worker*worker_incomplete];
