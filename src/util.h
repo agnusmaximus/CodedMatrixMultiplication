@@ -81,6 +81,7 @@ void check_correct(double *out, int n, string result_vector_fname) {
 	    exit(0);
 	}
     }
+    cout << "Checks pass!" << endl;
 }
 
 void get_incomplete_worker(int *completed, int n_workers, int *out) {

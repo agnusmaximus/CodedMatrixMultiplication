@@ -16,13 +16,14 @@ void coded2_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 	exit(0);
     }
 
-    double *matrix, *vec, *out;
-    matrix = vec = out = NULL;
+    double *matrix, *vec, *out, *out_final;
+    matrix = vec = out = out_final = NULL;
 
     //Have master load input matrix / vector, worker allocates memory
     if (proc_id == 0) {
 	vec = load_vector(n_cols, input_vector_filename);
 	out = (double *)malloc(sizeof(double) * n_rows);
+	out_final = (double *)malloc(sizeof(double) * n_rows);
     }
     else {
 	vec = (double *)malloc(sizeof(double) * n_cols);
@@ -62,6 +63,7 @@ void coded2_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 		MPI_Irecv(out_i, n_rows_per_worker, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &recv_reqs[i-1]);
 	    }
 	}
+
 	//Wait for all workers to finish
 	int n_done = 0, completed[n_workers];
 	memset(completed, 0, sizeof(int) * n_workers);
@@ -83,6 +85,11 @@ void coded2_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 			    vector_vector_subtract(rest_sum1, &out[n_rows_per_worker*i], rest_sum1, n_rows_per_worker);
 			    vector_vector_add_scalark(rest_sum2, &out[n_rows_per_worker*i], rest_sum2, -(i+1), n_rows_per_worker);
 			}
+
+			// We copy this workers results from out to out_final
+			double *out_i = &out[n_rows_per_worker*i];
+			double *out_final_i = &out_final[n_rows_per_worker*i];
+			memcpy(out_final_i, out_i, sizeof(double) * n_rows_per_worker);
 		    }
 		}
 	    }
@@ -94,7 +101,7 @@ void coded2_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 	    get_incomplete_worker(completed, n_workers, &worker_incomplete);
 	    if (completed[n_workers-2]) {
 		if (worker_incomplete != n_workers - 1) {
-		    double * out_i = &out[n_rows_per_worker*worker_incomplete];
+		    double * out_i = &out_final[n_rows_per_worker*worker_incomplete];
 		    memcpy(out_i, rest_sum1, sizeof(double) * n_rows_per_worker);
 		}
 	    }
@@ -103,17 +110,17 @@ void coded2_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 	    int smaller_incomplete, larger_incomplete;
 	    get_both_incomplete_workers(completed, n_workers, &smaller_incomplete, &larger_incomplete);
 	    if (larger_incomplete == n_workers-2) {
-		double * out_i = &out[n_rows_per_worker*smaller_incomplete];
+		double * out_i = &out_final[n_rows_per_worker*smaller_incomplete];
 		vector_vector_scalar_multiply(rest_sum2, rest_sum2, 1/(double)(smaller_incomplete+1), n_rows_per_worker);
 		memcpy(out_i, rest_sum2, sizeof(double) * n_rows_per_worker);
 	    }
 	    if (larger_incomplete == n_workers-1 && smaller_incomplete < n_workers-2) {
-		double * out_i = &out[n_rows_per_worker*smaller_incomplete];
+		double * out_i = &out_final[n_rows_per_worker*smaller_incomplete];
 		memcpy(out_i, rest_sum1, sizeof(double) * n_rows_per_worker);
 	    }
 	    if (larger_incomplete < n_workers-2) {
-		double * smaller_out = &out[n_rows_per_worker*smaller_incomplete];
-		double * larger_out = &out[n_rows_per_worker*larger_incomplete];
+		double * smaller_out = &out_final[n_rows_per_worker*smaller_incomplete];
+		double * larger_out = &out_final[n_rows_per_worker*larger_incomplete];
 		vector_vector_add_scalark(rest_sum2, rest_sum1, rest_sum2, -(smaller_incomplete+1), n_rows_per_worker);
 		vector_vector_scalar_multiply(rest_sum2, rest_sum2, 1/(double)(larger_incomplete-smaller_incomplete), n_rows_per_worker);
 		vector_vector_subtract(rest_sum1, rest_sum2, rest_sum1, n_rows_per_worker);
@@ -122,7 +129,7 @@ void coded2_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 	    }
 	}
 	long long int t2 = get_time();
-	check_correct(out, n_rows, result_vector_filename);
+	check_correct(out_final, n_rows, result_vector_filename);
 	cout << "TIME ELAPSED: " << t2-t1 << endl;
 
 	free(rest_sum1);

@@ -16,13 +16,14 @@ void coded1_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 	exit(0);
     }
 
-    double *matrix, *vec, *out;
-    matrix = vec = out = NULL;
+    double *matrix, *vec, *out, *out_final;
+    matrix = vec = out = out_final = NULL;
 
     //Have master load input matrix / vector, worker allocates memory
     if (proc_id == 0) {
 	vec = load_vector(n_cols, input_vector_filename);
 	out = (double *)malloc(sizeof(double) * n_rows);
+	out_final = (double *)malloc(sizeof(double) * n_rows);
     }
     else {
 	vec = (double *)malloc(sizeof(double) * n_cols);
@@ -74,6 +75,11 @@ void coded1_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 			else{
 			    vector_vector_subtract(rest_sum, &out[n_rows_per_worker*i], rest_sum, n_rows_per_worker);
 			}
+
+			// We copy this workers results from out to out_final
+			double *out_i = &out[n_rows_per_worker*i];
+			double *out_final_i = &out_final[n_rows_per_worker*i];
+			memcpy(out_final_i, out_i, sizeof(double) * n_rows_per_worker);
 		    }
 		}
 	    }
@@ -84,12 +90,12 @@ void coded1_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 	if (completed[n_workers-1] && n_done < n_workers) {
 	    int worker_incomplete = -1;
 	    get_incomplete_worker(completed, n_workers, &worker_incomplete);
-	    double * out_i = &out[n_rows_per_worker*worker_incomplete];
+	    double * out_i = &out_final[n_rows_per_worker*worker_incomplete];
 	    memcpy(out_i, rest_sum, sizeof(double) * n_rows_per_worker);
 	}
 
 	long long int t2 = get_time();
-	check_correct(out, n_rows, result_vector_filename);
+	check_correct(out_final, n_rows, result_vector_filename);
 	cout << "TIME ELAPSED: " << t2-t1 << endl;
 
 	free(rest_sum);
