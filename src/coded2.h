@@ -82,14 +82,14 @@ void coded2_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 			    vector_vector_sum(rest_sum2, parity2, rest_sum2, n_rows_per_worker);
 			}
 			else{
+			    // We copy this workers results from out to out_final
+			    double *out_i = &out[n_rows_per_worker*i];
+			    double *out_final_i = &out_final[n_rows_per_worker*i];
+  			    memcpy(out_final_i, out_i, sizeof(double) * n_rows_per_worker);
+
 			    vector_vector_subtract(rest_sum1, &out[n_rows_per_worker*i], rest_sum1, n_rows_per_worker);
 			    vector_vector_add_scalark(rest_sum2, &out[n_rows_per_worker*i], rest_sum2, -(i+1), n_rows_per_worker);
 			}
-
-			// We copy this workers results from out to out_final
-			double *out_i = &out[n_rows_per_worker*i];
-			double *out_final_i = &out_final[n_rows_per_worker*i];
-			memcpy(out_final_i, out_i, sizeof(double) * n_rows_per_worker);
 		    }
 		}
 	    }

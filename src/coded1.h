@@ -69,17 +69,18 @@ void coded1_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 		    if (did_complete) {
 			completed[i] = 1;
 			n_done += 1;
+
 			if (i == n_workers-1) {
 			    vector_vector_sum(parity, rest_sum, rest_sum, n_rows_per_worker);
 			}
 			else{
 			    vector_vector_subtract(rest_sum, &out[n_rows_per_worker*i], rest_sum, n_rows_per_worker);
-			}
 
-			// We copy this workers results from out to out_final
-			double *out_i = &out[n_rows_per_worker*i];
-			double *out_final_i = &out_final[n_rows_per_worker*i];
-			memcpy(out_final_i, out_i, sizeof(double) * n_rows_per_worker);
+			    // We copy this workers results from out to out_final
+			    double *out_i = &out[n_rows_per_worker*i];
+			    double *out_final_i = &out_final[n_rows_per_worker*i];
+			    memcpy(out_final_i, out_i, sizeof(double) * n_rows_per_worker);
+			}
 		    }
 		}
 	    }
@@ -100,6 +101,7 @@ void coded1_matrix_vector_multiply(int n_rows, int n_cols, string input_vector_f
 
 	free(rest_sum);
 	free(parity);
+	free(out_final);
     }
     else {
 	MPI_Recv(vec, n_cols, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
