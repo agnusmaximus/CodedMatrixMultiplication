@@ -4,7 +4,8 @@ https://arxiv.org/pdf/1512.02673.pdf
 
 # Usage
 
-It's beneficial to have this whole directory in shared fileysystem such as NFS.
+It's beneficial to have this whole directory in a shared fileysystem such as NFS.
+
 
 Run
 
@@ -17,6 +18,7 @@ to generate a square synthetic matrix multiplication problem given
 will be thrown if the number of rows is not evenly divisible by the
 number of non-parity workers. The generated synthetic data will be
 used by the code.
+
 
 Run
 ```
@@ -31,6 +33,7 @@ or
 make coded2
 ```
 to generate the MPI executable for the respective distributed matrix multiplication routine.
+
 
 Run
 ```
